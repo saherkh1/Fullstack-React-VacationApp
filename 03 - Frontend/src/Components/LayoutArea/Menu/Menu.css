@@ -1,0 +1,13 @@
+.Menu {
+	display: flex;
+    flex-direction: column;
+}
+
+.Menu > a {
+    margin-top: 20px;
+}
+
+.Menu .active { /* .active is a known class name for react menu */
+    color: darkcyan;
+    font-weight: bold;
+}

@@ -1,0 +1,11 @@
+{
+    "isProduction": true,
+    "isDevelopment": false,
+    "database": {
+        "host": "localhost",
+        "user": "root",
+        "password": "",
+        "name": "vacations"
+    },
+    "jwtKey": "I-Love-Kittens"
+}

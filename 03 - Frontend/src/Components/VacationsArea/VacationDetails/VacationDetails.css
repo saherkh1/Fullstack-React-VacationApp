@@ -1,0 +1,21 @@
+.VacationDetails > form {
+  width: 250px;
+  display: inline-block;
+}
+
+.VacationDetails input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 10px 0;
+}
+
+.VacationDetails button {
+  width: 80%;
+  margin: 20px;
+}
+
+.VacationDetails span {
+  color: red;
+  margin: 0 20px;
+  position: absolute;
+}
