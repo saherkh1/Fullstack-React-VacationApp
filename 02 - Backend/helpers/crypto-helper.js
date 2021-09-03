@@ -5,11 +5,7 @@ function hash(plainText) {
 
     if (!plainText) return null;
 
-    // Hashing without salt: 
-    // return crypto.createHash("sha512").update(plainText).digest("hex");
-
-    // Hashing with salt: 
-    const salt = "MakeThingsGoRight";
+    const salt = "ThisIsALotOfFun!";
     return crypto.createHmac("sha512", salt).update(plainText).digest("hex");
 }
 
@@ -22,9 +18,3 @@ module.exports = {
     hash,
     getNewToken
 };
-
-
-// SHA: Secure Hashing Algorithm
-// MD5: Message Digest Algorithm 5
-
-// HMAC: Hash based Message Authentication Code

@@ -4,10 +4,7 @@ import "./Menu.css";
 function Menu(): JSX.Element {
     return (
         <nav className="Menu">
-			<NavLink to="/home" exact>Home</NavLink>
-			<NavLink to="/products" exact>Products</NavLink>
-			<NavLink to="/support" exact>Support</NavLink>
-			<NavLink to="/contact-us" exact>Contact Us</NavLink>
+			<NavLink to="/login" exact></NavLink>
         </nav>
     );
 }

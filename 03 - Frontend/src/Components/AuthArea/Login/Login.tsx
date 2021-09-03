@@ -1,12 +1,14 @@
 import axios from "axios";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import CredentialsModel from "../../../Models/CredentialsModel";
 import UserModel from "../../../Models/UserModel";
 import { AuthActionType } from "../../../Redux/AuthState";
 import store from "../../../Redux/Store";
 import config from "../../../Services/Config";
 import notify from "../../../Services/Notify";
+import socketService from "../../../Services/SocketService";
 import "./Login.css";
 
 function Login(): JSX.Element {
@@ -38,7 +40,7 @@ function Login(): JSX.Element {
 
                 <label>Password: </label>
                 <input type="password" {...register("password")} />
-
+                <NavLink to="/register" >Register now</NavLink>
                 <button>Login</button>
 
             </form>

@@ -14,9 +14,8 @@ class vacation {
         this.followersCount = vacation.followersCount;
     }
 
-  
+
     validatePut() {
-        console.log(this);
         const validationSchema = Joi.object({
             vacationId: Joi.number().required().positive(),
             description: Joi.string().required().min(2).max(255),
@@ -34,12 +33,22 @@ class vacation {
     validatePatch() {
         const validationSchema = Joi.object({
             vacationId: Joi.number().required().positive(),
-            description: Joi.string().optional().min(2).max(255),
-            destination: Joi.string().optional().min(2).max(255),
+            description: Joi.alternatives([
+                Joi.string().allow('').allow('null').allow(null),
+                Joi.string().min(2).max(255)]).optional(),
+            destination: Joi.alternatives([
+                Joi.string().allow('').allow('null').allow(null),
+                Joi.string().min(2).max(255)]).optional(),
             image: Joi.string().optional(),
-            endTime: Joi.alternatives([Joi.date(),Joi.string().allow('').allow('null').allow(null)]).optional(),
-            startTime: Joi.alternatives([Joi.date(),Joi.string().allow('').allow('null').allow(null)]).optional(),
-            price: Joi.number().positive(),
+            endTime: Joi.alternatives([
+                Joi.date(),
+                Joi.string().allow('').allow('null').allow(null)]).optional(),
+            startTime: Joi.alternatives([
+                Joi.date(),
+                Joi.string().allow('').allow('null').allow(null)]).optional(),
+            price: Joi.alternatives([
+                Joi.number().positive(), 
+                Joi.string().allow('').allow('null').allow(null)]).optional(),
             followersCount: Joi.optional()
         }).error(BaseModel.customErrors);
         const result = validationSchema.validate(this, { abortEarly: false });

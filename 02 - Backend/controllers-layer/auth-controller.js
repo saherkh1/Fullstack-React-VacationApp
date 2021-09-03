@@ -2,48 +2,43 @@ const express = require("express");
 const UserModel = require("../models/user");
 const CredentialsModel = require("../models/credentials");
 const authLogic = require("../business-logic-layer/auth-logic");
+const errorsHelper = require("../helpers/errors-helper")
 const router = express.Router();
 
 // Register: 
 router.post("/register", async (request, response) => {
     try {
-        // Data: 
         const user = new UserModel(request.body);
-        // Validation: 
         const errors = user.validate();
-        if (errors) return response.status(400).send(errors);
+        if (errors) return errorsHelper.badRequestError(response,errors);
         if(await authLogic.isUsernameTaken(user.username)) return response.status(400).send(`Username "${user.username}" already taken.`);
-
-        // Logic: 
+        
         const addedUser = await authLogic.registerAsync(user);
-
-        // Success: 
+        // console.log( addedUser = await authLogic.registerAsync(user));
+        
         response.status(201).json(addedUser);
     }
     catch (err) {
-        response.status(500).send(err.message);
+        errorsHelper.internalServerError(response, err);
     }
 });
 
 // Login: 
 router.post("/login", async (request, response) => {
     try {
-        // Data: 
         const credentials = new CredentialsModel(request.body);
 
-        // Validation: 
         const errors = credentials.validate();
-        if (errors) return response.status(400).send(errors);
-
-        // Logic: 
+        if (errors) return errorsHelper.badRequestError(response,err);
+        
         const loggedInUser = await authLogic.loginAsync(credentials);
         if (!loggedInUser) return response.status(401).send("Incorrect username or password.");
+        console.log(request.body);
 
-        // Success: 
         response.json(loggedInUser);
     }
     catch (err) {
-        response.status(500).send(err.message);
+        errorsHelper.internalServerError(response,err);
     }
 });
 

@@ -1,5 +1,4 @@
-import { Notyf } from "notyf"; // npm i notyf
-
+import { Notyf } from "notyf"; 
 class Notify {
     
     private notification = new Notyf({ duration: 4000, position: { x: "left", y: "top" } });

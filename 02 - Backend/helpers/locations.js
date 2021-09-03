@@ -1,6 +1,6 @@
 const path = require("path");
 
-const rootFolder = path.resolve(__dirname, "..", "..");
+const rootFolder = path.resolve(__dirname, "..");
 const productImagesFolder = path.join(rootFolder, "backend", "images", "products");
 const notFoundImageFile = path.join(rootFolder, "backend", "images", "not-found.jpg");
 

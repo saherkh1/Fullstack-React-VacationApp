@@ -10,31 +10,28 @@ import notify from "../../../Services/Notify";
 import { BsX } from "react-icons/bs";
 import "./AddVacation.css";
 import axios from "axios";
+import { NavLink } from "react-router-dom";
 
 
 function AddVacation(): JSX.Element {
     const history = useHistory();
     const { register, handleSubmit, formState } = useForm<VacationModel>();
-    // const bsxStyle: any = { display: 'relative', position: 'absolute', top: '3px', right: '3px' };
+    const bsxStyle: any = { display: 'relative', position: 'absolute', top: '3px', right: '3px' };
 
     // If you are not logged in:
     useEffect(() => {
-        if (!store.getState().authState.user) {
+        if (!store.getState().authState.user ) {
             notify.error("You are not logged in!");
             history.push("/login");
+        }
+        if (!(store.getState().authState.user.role === "admin" )) {
+            notify.error("(^///^)");
+            history.push("/home");
         }
     });
 
     async function send(Vacation: VacationModel) {
         try {
-            console.log(Vacation);
-            console.log("destination "+Vacation.destination);
-            console.log("description "+Vacation.description.toString());
-            console.log("price "+Vacation.price);
-            console.log("startTime "+Vacation.startTime.toString());
-            console.log("endTime "+Vacation.endTime.toString());
-            console.log("image "+Vacation.image.item(0));
-
             // Convert product object into FormData object: 
             let myFormData = new FormData();
             myFormData.append("destination", Vacation.destination);
@@ -47,12 +44,12 @@ function AddVacation(): JSX.Element {
             // POST to the server the FormData object:
             // const headers = { "authorization": "Bearer " + store.getState().authState.user?.token };
             // const headers = { "Content-Type": "multipart/form-data" };
-            const response = await axios.post<VacationModel>(config.vacationsUrl, myFormData);
-            // const response = await jwtAxios.post<VacationModel>(config.vacationsUrl, myFormData);
-            console.log("response: ",response);
+            // const response = await axios.post<VacationModel>(config.vacationsUrl, myFormData);
+            const response = await jwtAxios.post<VacationModel>(config.vacationsUrl, myFormData);
+            // console.log("response: ",response);
 
             // Add the added product to Redux (response.data is the added product which backend sends us back): 
-            // store.dispatch({ type: VacationsActionType.VacationAdded, payload: response.data });
+            store.dispatch({ type: VacationsActionType.VacationAdded, payload: response.data });
 
             notify.success("Product has been added.");
 
@@ -68,8 +65,7 @@ function AddVacation(): JSX.Element {
             <h1>Add Vacation</h1>
             <form onSubmit={handleSubmit(send)}>
 
-                {/* <BsX style={bsxStyle} /> */}
-
+                {/* <BsX className="XButton" /> */}
                 <label>Destination: </label>
                 <input  {...register("destination", { required: true })} />
                 {formState.errors.destination && <span>Missing Destination.</span>}
@@ -98,6 +94,8 @@ function AddVacation(): JSX.Element {
                 <button>Add</button>
 
             </form>
+            <NavLink to="/home"> <BsX style={bsxStyle} /> </NavLink>
+
         </div>
     );
 }

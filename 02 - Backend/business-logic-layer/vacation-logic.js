@@ -27,14 +27,8 @@ async function deleteVacationAsync(vacationId) {
 }
 
 async function updateFullVacationAsync(vacation) {
-    const sql = `UPDATE vacation SET description = '${vacation.description}',
-        destination = '${vacation.destination}',
-        image = '${vacation.image}',
-        startTime = '${vacation.startTime}',
-        endTime = '${vacation.endTime}',
-        price = ${vacation.price}
-       WHERE vacationId = ${vacation.vacationId}`;
-    const info = await dal.executeAsync(sql);
+    const sql = `UPDATE vacation SET description = ?,destination = ?, image = ?, startTime = ?, endTime = ?, price = ? WHERE vacationId = ?`;
+    const info = await dal.executeAsync(sql, [vacation.description, vacation.destination, vacation.image, vacation.startTime, vacation.endTime, vacation.price, vacation.vacationId]);
     const response = info.affectedRows === 0 ? null : vacation;
     return response;
 }
@@ -43,14 +37,24 @@ async function updateFullVacationAsync(vacation) {
 async function updatePartialVacationAsync(vacation) {
     console.log(vacation);
     const existingVacation = await getOneVacationAsync(vacation.vacationId);
-    if(!existingVacation) return null;
-    for(const prop in vacation) {
-        if(prop in existingVacation && vacation[prop] && vacation[prop] !== 'null' && vacation[prop] !== '' ) {
-            existingVacation[prop] = vacation[prop];
-        }
-    }
+    if (!existingVacation) return null;
+    // for (const prop in vacation) {
+    //     if (prop in existingVacation && vacation[prop] && vacation[prop] !== 'null' && vacation[prop] !== '') {
+    //         console.log("in prop " + prop + " = " + existingVacation[prop] + " is now => " + vacation[prop])
+    //     }
+    // }
     // updateFullVacationAsync(existingVacation);
     return await updateFullVacationAsync(existingVacation);
+}
+async function addOneFollowerAsync(vacationId) {
+    const sql = `UPDATE vacation SET followersCount = followersCount + 1 WHERE vacationId = ?`;
+    const info = await dal.executeAsync(sql, [vacationId]);
+    return info.affectedRows === 0 ? null : vacationId;
+}
+async function removeOneFollowerAsync(vacationId) {
+    const sql = `UPDATE vacation SET followersCount = followersCount - 1 WHERE vacationId = ?`;
+    const info = await dal.executeAsync(sql, [vacationId]);
+    return info.affectedRows === 0 ? null : vacationId;
 }
 module.exports = {
     getAllVacationAsync,
@@ -58,6 +62,8 @@ module.exports = {
     getOneVacationAsync,
     deleteVacationAsync,
     updateFullVacationAsync,
-    updatePartialVacationAsync
+    updatePartialVacationAsync,
+    addOneFollowerAsync,
+    removeOneFollowerAsync,
 };
 
