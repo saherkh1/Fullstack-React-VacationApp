@@ -6,10 +6,11 @@ import { BsX } from "react-icons/bs";
 import { matchPath, NavLink, useHistory, useParams } from "react-router-dom";
 import VacationModel from "../../../Models/VacationModel";
 import store from "../../../Redux/Store";
-import { VacationsActionType } from "../../../Redux/VacationsState";
+import { VacationsAction, VacationsActionType } from "../../../Redux/VacationsState";
 import config from "../../../Services/Config";
 import jwtAxios from "../../../Services/jwtAxios";
 import notify from "../../../Services/Notify";
+import socketService from "../../../Services/SocketService";
 import "./VacationDetails.css";
 
 interface RouteProps {
@@ -33,14 +34,18 @@ function VacationDetails(): JSX.Element {
 
     });
     async function activate() {
-        if (!store.getState().authState.user) history.push("/login");
-        else if (store.getState().authState.user.role === "admin") isAdmin(true);
-        if (store.getState().VacationsState.Vacations.length === 0) {
-            const response = await jwtAxios.get<VacationModel[]>(config.vacationsUrl);
-            store.dispatch({ type: VacationsActionType.VacationsDownloaded, payload: response.data });
+        try {
+            if (!store.getState().authState.user) history.push("/login");
+            else if (store.getState().authState.user.role === "admin") isAdmin(true);
+            if (store.getState().VacationsState.Vacations.length === 0) {
+                const response = await jwtAxios.get<VacationModel[]>(config.vacationsUrl);
+                store.dispatch({ type: VacationsActionType.VacationsDownloaded, payload: response.data });
+            }
+            setVacation(store.getState().VacationsState.Vacations.find(oneVacation => oneVacation.vacationId === +routeProps.id));
+            // console.log(vacation);
+        } catch (err) {
+            notify.error(err)
         }
-        setVacation(store.getState().VacationsState.Vacations.find(oneVacation => oneVacation.vacationId === +routeProps.id));
-        // console.log(vacation);
     }
     async function send(Vacation: VacationModel) {
         try {
@@ -58,8 +63,10 @@ function VacationDetails(): JSX.Element {
             const foundVacation = store.getState().VacationsState.Vacations.find(oneVacation => oneVacation.vacationId === +routeProps.id);
             setVacation(foundVacation);
 
-            store.dispatch({ type: VacationsActionType.VacationUpdated, payload: response.data });
-
+            // store.dispatch();
+            const vacationsAction: VacationsAction = { type: VacationsActionType.VacationUpdated, payload: response.data };
+            store.dispatch(vacationsAction);
+            admin && socketService.send(vacationsAction);
             notify.success("Vacation has been Updated.");
 
             history.push("/home");

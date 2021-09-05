@@ -34,14 +34,14 @@ async function loginAsync(credentials) {
     return newUser;
 }
 
-async function addAuthorizationAsync(user){
+async function addAuthorizationAsync(user) {
     const sql = "SELECT role FROM authorization WHERE id = ? ";
     const role = await dal.executeAsync(sql, [user.id]);
     user.role = role[0].role;
     return user
 }
 
-async function setAuthorizationAsync(user){
+async function setAuthorizationAsync(user) {
     const sql = "INSERT INTO authorization VALUES(DEFAULT, ?, DEFAULT)";
     const role = await dal.executeAsync(sql, [user.id]);
     return role;

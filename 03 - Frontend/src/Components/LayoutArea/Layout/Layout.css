@@ -1,9 +1,9 @@
 .Layout {
-    height: 100%;
-    box-sizing: border-box;
+    /* height: 100%; */
+    /* box-sizing: border-box; */
     display: grid;
-    /* grid-template-rows: 10% 90% 0%; */
-    grid-template-columns: repeat(6, 1fr);
+    /* grid-template-rows: 10% 85% 5%;
+    grid-template-columns: repeat(6, 1fr); */
 }
 
 /* .Layout, .Layout > * {

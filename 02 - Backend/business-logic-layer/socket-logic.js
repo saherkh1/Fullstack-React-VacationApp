@@ -8,10 +8,11 @@ function init(listener) {
     // .on subscribes to a subject "connection"
     socketsManager.sockets.on("connection", socket => {
         
+        console.log("A client has been connected.");
 
         socket.on("msg-from-client", msg => {
             console.log("A client sent a message: ", msg);
-            socketsManager.sockets.emit("msg-from-server", msg);
+            socket.broadcast.emit("msg-from-server", msg);
         });
 
         socket.on("disconnect", () => {

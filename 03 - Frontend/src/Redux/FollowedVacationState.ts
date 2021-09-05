@@ -30,7 +30,7 @@ export function FollowedVacationReducer(currentState: FollowedVacationState = ne
             newState.followedVacations.push(action.payload); // Here action.payload MUST be the one followedVacationOBJ!
             break;
         case FollowedVacationActionType.UnFollowed:
-            const deletedState = newState.followedVacations.filter((value)=> value.vacationId !== action.payload.vacationId); // Here action.payload MUST be the one un followedVacationOBJ!
+            const deletedState = newState.followedVacations.filter((value)=> value.vacationId !== action.payload); // Here action.payload MUST be the one un followedVacationOBJ!
             newState.followedVacations = deletedState;
             break;
     }

@@ -1,25 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import VacationModel from "../../../Models/VacationModel";
 import store from "../../../Redux/Store";
-import { VacationsActionType } from "../../../Redux/VacationsState";
+import { VacationsAction, VacationsActionType } from "../../../Redux/VacationsState";
 import config from "../../../Services/Config";
 import jwtAxios from "../../../Services/jwtAxios";
 import notify from "../../../Services/Notify";
 import { BsX } from "react-icons/bs";
 import "./AddVacation.css";
-import axios from "axios";
 import { NavLink } from "react-router-dom";
+import socketService from "../../../Services/SocketService";
 
 
 function AddVacation(): JSX.Element {
     const history = useHistory();
     const { register, handleSubmit, formState } = useForm<VacationModel>();
-    const bsxStyle: any = { display: 'relative', position: 'absolute', top: '3px', right: '3px' };
+    const [admin, isAdmin] = useState(false);
 
     // If you are not logged in:
     useEffect(() => {
+        activate();
         if (!store.getState().authState.user ) {
             notify.error("You are not logged in!");
             history.push("/login");
@@ -29,7 +30,7 @@ function AddVacation(): JSX.Element {
             history.push("/home");
         }
     });
-
+    const activate = () => (store.getState().authState.user.role === "admin") && isAdmin(true);
     async function send(Vacation: VacationModel) {
         try {
             // Convert product object into FormData object: 
@@ -49,7 +50,9 @@ function AddVacation(): JSX.Element {
             // console.log("response: ",response);
 
             // Add the added product to Redux (response.data is the added product which backend sends us back): 
-            store.dispatch({ type: VacationsActionType.VacationAdded, payload: response.data });
+            const vacationsAction: VacationsAction ={ type: VacationsActionType.VacationAdded, payload: response.data };
+            store.dispatch(vacationsAction);
+            admin && socketService.send(vacationsAction);
 
             notify.success("Product has been added.");
 
@@ -94,7 +97,7 @@ function AddVacation(): JSX.Element {
                 <button>Add</button>
 
             </form>
-            <NavLink to="/home"> <BsX style={bsxStyle} /> </NavLink>
+            <NavLink to="/home"> <BsX className="FloatElement TopRight" /> </NavLink>
 
         </div>
     );

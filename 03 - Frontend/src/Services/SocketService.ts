@@ -1,13 +1,18 @@
 import { VacationsAction } from './../Redux/VacationsState';
 import { io, Socket } from 'socket.io-client'; // npm i socket.io-client
+import store from "../Redux/Store";
 
 class SocketService {
 
     private socket: Socket;
 
-    public connect(/*displayMessage: Function*/): void {
+    public connect(): void {
         this.socket = io("http://localhost:3001");
-        // this.socket.on("msg-from-server", msg => displayMessage(msg));
+        this.socket.on("msg-from-server", msg => store.dispatch(msg));
+    }
+
+    public isConnected(): boolean {
+         return this.socket?.connected;
     }
 
     public disconnect(): void {

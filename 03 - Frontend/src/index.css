@@ -15,6 +15,9 @@ body,
 a {
   color: blue;
 }
+img{
+    border-radius: 25px;
+}
 .Box {
   display: inline-block;
   text-align: left;
@@ -31,6 +34,10 @@ a {
 .TopRight {
   top: 3px;
   right: 3px;
+}
+.BottomRight {
+    bottom: 3px;
+    right: 3px;
 }
 .TopRightSlightLeft {
   top: 3px;

@@ -17,7 +17,6 @@ function Register(): JSX.Element {
     async function send(user: UserModel) {
         try {
             const response = await axios.post<UserModel>(config.registerUrl, user);
-            console.log(response.data);
             store.dispatch({ type: AuthActionType.UserRegistered, payload: response.data });
             notify.success("You have been successfully registered!");
             history.push("/home");

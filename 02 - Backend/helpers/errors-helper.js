@@ -17,7 +17,7 @@ function badRequestError(response, err) {
         return;
     }
 
-    return response.status(400).send("Bad Request, try deferent values");
+    return response.status(400).send("Bad Request, try deferent values.");
 }
 module.exports = {
     internalServerError,

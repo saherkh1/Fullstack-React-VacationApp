@@ -6,9 +6,10 @@ const errorsHelper = require("../helpers/errors-helper");
 const verifyLoggedIn = require("../middleware/auth-verify");
 const router = express.Router();
 const path = require('path');
+const locations = require("../helpers/locations");
+var fs = require('fs');
 
-
-router.get("/vacations", verifyLoggedIn,async (request, response) => {
+router.get("/", verifyLoggedIn,async (request, response) => {
     try {
         const vacations = await logic.getAllVacationAsync();
         response.json(vacations);
@@ -19,18 +20,18 @@ router.get("/vacations", verifyLoggedIn,async (request, response) => {
 });
 
 
-router.get("/vacations/:vacationId([0-9]+)",verifyLoggedIn, async (request, response) => {
+router.get("/:vacationId([0-9]+)",verifyLoggedIn, async (request, response) => {
     try {
         const vacationId = +request.params.vacationId;
-        const vacations = await logic.getOneVacationAsync(vacationId);
-        response.json(vacations);
+        const vacation = await logic.getOneVacationAsync(vacationId);
+        response.json(vacation);
     }
     catch (err) {
         errorsHelper.internalServerError(response,err);
     }
 });
 
-router.post("/vacations",verifyLoggedIn, async (request, response) => {
+router.post("/",verifyLoggedIn, async (request, response) => {
     try {
         if (!request.files) {
             errorsHelper.badRequestError(response,"No image sent");
@@ -40,14 +41,17 @@ router.post("/vacations",verifyLoggedIn, async (request, response) => {
             errorsHelper.badRequestError(response,"The image must be called image");
             return;
         }
+        
         const image = request.files.image; // The name of the image sent from the front.
         const extension = image.name.substr(image.name.lastIndexOf(".")); // ".jpg" or ".png" or ".gif" or...
         const newFileName = uuid.v4() + extension; // "d3388752-7a4f-44d5-992c-bc316c750f7f.jpg"
         image.mv("./images/products/" + newFileName); // Move the file into the hard-disk
         request.body.image = newFileName;
-        const vacation = request.body;
+        const vacation = new vacationModel(request.body);
+        
+        const err = vacation.validatePost();
+        if (err) return errorsHelper.badRequestError(response,err);
 
-        // const addedVacation = await logic.addVacationAsync(vacation, request.files ? request.files.image : null);
         const addedVacation = await logic.addVacationAsync(vacation);
         response.status(201).json(addedVacation);
     }
@@ -55,8 +59,7 @@ router.post("/vacations",verifyLoggedIn, async (request, response) => {
         errorsHelper.internalServerError(response,err);
     }
 });
-// make sure that the date is right............................................
-router.put("/vacations/:vacationId([0-9]+)",verifyLoggedIn, async (request, response) => {
+router.put("/:vacationId([0-9]+)",verifyLoggedIn, async (request, response) => {
     try {
         // Model:
         const vacationId = +request.params.vacationId;
@@ -79,21 +82,25 @@ router.put("/vacations/:vacationId([0-9]+)",verifyLoggedIn, async (request, resp
     }
 });
 
-router.patch("/vacations/:vacationId([0-9]+)",verifyLoggedIn, async (request, response) => {
+router.patch("/:vacationId([0-9]+)",verifyLoggedIn, async (request, response) => {
     try {
-
         // Model:
         const vacationId = +request.params.vacationId;
         request.body.vacationId = vacationId;
         const vacation = new vacationModel(request.body);
-
+        
         // Validate:
         const errors = vacation.validatePatch();
         if (errors) return errorsHelper.badRequestError(response,errors);
+        const vacationToBeUpdated = await logic.PartialVacationUpdateHelperAsync(vacation);
+        if (!vacationToBeUpdated) return response.status(404).send(`id ${vacationId} not found`);
+        
+        const newVacation = new vacationModel(vacationToBeUpdated);
+        const err = newVacation.validatePut();
+        if (err) return errorsHelper.badRequestError(response,err);
 
-        // Logic:
-        const updatedVacation = await logic.updatePartialVacationAsync(vacation);
-        if (!updatedVacation) return response.status(404).send(`id ${vacationId} not found`);
+        const updatedVacation = await logic.updateFullVacationAsync(vacationToBeUpdated)
+        
 
         // Success:
         response.json(updatedVacation);
@@ -103,10 +110,14 @@ router.patch("/vacations/:vacationId([0-9]+)",verifyLoggedIn, async (request, re
     }
 });
 
-router.delete("/vacations/:vacationId",verifyLoggedIn, async (request, response) => {
+router.delete("/:vacationId",verifyLoggedIn, async (request, response) => {
     try {
         const vacationId = +request.params.vacationId;
-        await logic.deleteVacationAsync(vacationId);
+        const oldImageName = await logic.deleteVacationAsync(vacationId);
+
+        //delete the old image
+        fs.unlinkSync(locations.getProductImageFile(oldImageName));
+        
         response.sendStatus(204);
     }
     catch (err) {
@@ -114,7 +125,7 @@ router.delete("/vacations/:vacationId",verifyLoggedIn, async (request, response)
     }
 });
 
-router.get("/vacations/images/:imageName", async (request, response) => {
+router.get("/images/:imageName", async (request, response) => {
     try {
         const imageName = request.params.imageName;
         response.sendFile(path.join(__dirname, '../images/products/', imageName));

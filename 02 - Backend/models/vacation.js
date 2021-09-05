@@ -14,6 +14,20 @@ class vacation {
         this.followersCount = vacation.followersCount;
     }
 
+    validatePost() {
+        const validationSchema = Joi.object({
+            vacationId: Joi.number().optional().integer().positive(),
+            description: Joi.string().required().min(2).max(255),
+            destination: Joi.string().required().min(2).max(255),
+            image: Joi.string().required(),
+            startTime: Joi.date().iso().less(this.endTime).required(),
+            endTime: Joi.date().iso().greater(this.startTime).required(),
+            price: Joi.number().required().positive(),
+            followersCount: Joi.optional()
+        }).error(BaseModel.customErrors);
+        const result = validationSchema.validate(this, { abortEarly: false });
+        return result.error?.details.map(err => err.message);
+    }
 
     validatePut() {
         const validationSchema = Joi.object({
@@ -21,8 +35,8 @@ class vacation {
             description: Joi.string().required().min(2).max(255),
             destination: Joi.string().required().min(2).max(255),
             image: Joi.string().required(),
-            startTime: Joi.date().iso().required(),
-            endTime: Joi.date().iso().greater(Joi.ref('startTime')).required(),
+            startTime: Joi.date().iso().less(this.endTime).required(),
+            endTime: Joi.date().iso().greater(this.startTime).required(),
             price: Joi.number().required().positive(),
             followersCount: Joi.optional()
         }).error(BaseModel.customErrors);
@@ -40,12 +54,8 @@ class vacation {
                 Joi.string().allow('').allow('null').allow(null),
                 Joi.string().min(2).max(255)]).optional(),
             image: Joi.string().optional(),
-            endTime: Joi.alternatives([
-                Joi.date(),
-                Joi.string().allow('').allow('null').allow(null)]).optional(),
-            startTime: Joi.alternatives([
-                Joi.date(),
-                Joi.string().allow('').allow('null').allow(null)]).optional(),
+            endTime: Joi.alternatives([Joi.date()]).optional(),
+            startTime: Joi.alternatives([Joi.date()]).optional(),
             price: Joi.alternatives([
                 Joi.number().positive(), 
                 Joi.string().allow('').allow('null').allow(null)]).optional(),
