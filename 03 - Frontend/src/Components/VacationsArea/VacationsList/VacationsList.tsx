@@ -23,7 +23,7 @@ interface VacationListState {
 
 class VacationsList extends Component<{}, VacationListState> {
 
-    private unsubscribe: any;
+    private unsubscribeMe: any;
 
     public constructor(props: {}) {
         super(props);
@@ -49,7 +49,7 @@ class VacationsList extends Component<{}, VacationListState> {
                 }
                 this.setState({ vacations: store.getState().VacationsState.Vacations });
             }
-            this.unsubscribe = store.subscribe(() => {
+            this.unsubscribeMe = store.subscribe(() => {
                 if (store.getState().VacationsState.Vacations !== this.state.vacations)
                     this.setState({ vacations: store.getState().VacationsState.Vacations });
             })
@@ -59,7 +59,8 @@ class VacationsList extends Component<{}, VacationListState> {
         }
     }
     public async componentWillUnmount() {
-        this.unsubscribe();
+        if(this.unsubscribeMe)
+        this.unsubscribeMe();
     }
 
     public render(): JSX.Element {

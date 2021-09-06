@@ -1,4 +1,4 @@
-import { VacationsActionType } from './../Redux/VacationsState';
+import { VacationsAction, VacationsActionType } from './../Redux/VacationsState';
 import VacationModel from "../Models/VacationModel";
 import store from "../Redux/Store";
 import jwtAxios from "./jwtAxios";
@@ -15,3 +15,15 @@ export function getVacationAsync(vacationId: number)  {
         .find(oneVacation => oneVacation.vacationId === vacationId) })
 }
 
+export async function updateVacationWithFormData(myFormData: FormData, vacationId: number) {
+    const response = await jwtAxios.patch<VacationModel>(
+        config.vacationsUrl + vacationId,
+        myFormData
+    );
+    const vacationsAction: VacationsAction = {
+        type: VacationsActionType.VacationUpdated,
+        payload: response.data,
+    };
+    store.dispatch(vacationsAction);
+    return vacationsAction;
+}
