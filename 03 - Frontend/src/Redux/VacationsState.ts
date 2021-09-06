@@ -1,5 +1,4 @@
 import VacationModel from "../Models/VacationModel";
-import socketService from "../Services/SocketService";
 
 export class VacationsState {
     public Vacations: VacationModel[] = [];

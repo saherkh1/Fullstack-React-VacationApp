@@ -2,12 +2,12 @@ const io = require("socket.io");
 
 function init(listener) {
 
-    const socketsManager = io(listener, { cors: { origin: "http://localhost:3000"}}); 
+    const socketsManager = io(listener, { cors: { origin: "http://localhost:3000" } });
     //..................................................... add it to locations
 
     // .on subscribes to a subject "connection"
     socketsManager.sockets.on("connection", socket => {
-        
+
         console.log("A client has been connected.");
 
         socket.on("msg-from-client", msg => {

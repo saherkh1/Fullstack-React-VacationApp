@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useHistory } from "react-router";
-import VacationModel from "../../../Models/VacationModel";
-import store from "../../../Redux/Store";
 import { VacationsAction, VacationsActionType } from "../../../Redux/VacationsState";
-import config from "../../../Services/Config";
+import socketService from "../../../Services/SocketService";
+import VacationModel from "../../../Models/VacationModel";
 import jwtAxios from "../../../Services/jwtAxios";
 import notify from "../../../Services/Notify";
+import config from "../../../Services/Config";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useHistory } from "react-router";
+import store from "../../../Redux/Store";
 import { BsX } from "react-icons/bs";
 import "./AddVacation.css";
-import { NavLink } from "react-router-dom";
-import socketService from "../../../Services/SocketService";
 
 
 function AddVacation(): JSX.Element {
@@ -33,7 +33,11 @@ function AddVacation(): JSX.Element {
     const activate = () => (store.getState().authState.user.role === "admin") && isAdmin(true);
     async function send(Vacation: VacationModel) {
         try {
-            // Convert product object into FormData object: 
+            // console.log("Form ",Vacation.startTime.toString()+":00.000Z",Vacation.endTime)
+            // const start = new Date(dateHandler(Vacation.startTime.toString()));
+            // console.log(start);
+            // const end = new Date(dateHandler(Vacation.endTime.toString()))
+            // validateStartEndTime(fixFormDate(Vacation.startTime),Vacation.endTime);
             let myFormData = new FormData();
             myFormData.append("destination", Vacation.destination);
             myFormData.append("description", Vacation.description);
@@ -43,11 +47,7 @@ function AddVacation(): JSX.Element {
             myFormData.append("image", Vacation.image.item(0));
           
             // POST to the server the FormData object:
-            // const headers = { "authorization": "Bearer " + store.getState().authState.user?.token };
-            // const headers = { "Content-Type": "multipart/form-data" };
-            // const response = await axios.post<VacationModel>(config.vacationsUrl, myFormData);
             const response = await jwtAxios.post<VacationModel>(config.vacationsUrl, myFormData);
-            // console.log("response: ",response);
 
             // Add the added product to Redux (response.data is the added product which backend sends us back): 
             const vacationsAction: VacationsAction ={ type: VacationsActionType.VacationAdded, payload: response.data };
@@ -68,7 +68,6 @@ function AddVacation(): JSX.Element {
             <h1>Add Vacation</h1>
             <form onSubmit={handleSubmit(send)}>
 
-                {/* <BsX className="XButton" /> */}
                 <label>Destination: </label>
                 <input  {...register("destination", { required: true })} />
                 {formState.errors.destination && <span>Missing Destination.</span>}

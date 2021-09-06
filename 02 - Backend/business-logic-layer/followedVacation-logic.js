@@ -6,11 +6,6 @@ async function getFollowedVacationAsync(uuid) {
     const response = await dal.executeAsync(sql, [uuid]);
     return response;
 }
-async function isFollowingAsync(follow) {
-    const sql = "SELECT * FROM follow WHERE uuid = ? AND vacationId = ? ";
-    const response = await dal.executeAsync(sql, [follow.uuid, follow.vacationId]);
-    return response;
-}
 
 async function addFollowerAsync(follow) {
     const sql = "INSERT INTO follow VALUES(DEFAULT, ?, ?)";
@@ -20,19 +15,23 @@ async function addFollowerAsync(follow) {
 }
 
 async function getVacationFollowCountAsync(vacationId) {
+    try{
     const sql = `SELECT COUNT(*) AS count FROM follow WHERE vacationId = ${vacationId}`;
     const Vacation = await dal.executeAsync(sql);
     return Vacation[0].count;
+    }catch(err){
+        console.log(err);
+    }
 }
 
-async function deleteFollowerAsync(followId, vacationId) {
+async function deleteFollowerAsync(followId,vacationId) {
     const sql = "DELETE FROM follow WHERE followId = ? ";
     await dal.executeAsync(sql, [followId]);
 
 }
 
 module.exports = {
-    isFollowingAsync,
+    
     getFollowedVacationAsync,
     addFollowerAsync,
     deleteFollowerAsync,

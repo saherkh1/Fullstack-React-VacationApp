@@ -1,8 +1,8 @@
 import { Redirect, Route, Switch } from "react-router";
+import Chart from "../../AdminArea/Chart";
 import Login from "../../AuthArea/Login/Login";
 import Logout from "../../AuthArea/Logout/Logout";
 import Register from "../../AuthArea/Register/Register";
-import TestingSocket from "../../TestArea/TestingSocket/TestingSocket";
 import AddVacation from "../../VacationsArea/AddVacation/AddVacation";
 import VacationDetails from "../../VacationsArea/VacationDetails/VacationDetails";
 import VacationsList from "../../VacationsArea/VacationsList/VacationsList";
@@ -20,7 +20,7 @@ function Routing(): JSX.Element {
                 <Route path="/logout" component={Logout} exact />
                 <Route path="/home" component={VacationsList} exact />
                 <Route path="/addVacation" component={AddVacation} exact />
-                <Route path="/chat" component={TestingSocket} exact />
+                <Route path="/chart" component={Chart} exact />
                 <Route path="/vacationDetails/:id([0-9]+)" component={VacationDetails} exact />
                 {/* <Route path="/products" component={ProductList} exact /> */}
                 {/* <Route path="/products/details/:id([0-9]+)" component={ProductDetails} exact /> */}

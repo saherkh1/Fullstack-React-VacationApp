@@ -49,7 +49,6 @@ router.post("/", async (request, response) => {
 //for testing
 router.get("/count/:vacationId", async (request, response) => {
     try {
-        console.log("follow count is invoked")
 
         const vacationId = +request.params.vacationId;
         
@@ -65,7 +64,7 @@ router.delete("/:followId/:vacationId", async (request, response) => {
     try {
         const followId = +request.params.followId;
         const vacationId = +request.params.vacationId;
-        console.log(followId)
+        
         await logic.deleteFollowerAsync(followId,vacationId);
         response.sendStatus(204);
     }

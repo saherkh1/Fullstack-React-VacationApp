@@ -10,12 +10,11 @@ router.post("/register", async (request, response) => {
     try {
         const user = new UserModel(request.body);
         const errors = user.validate();
-        if (errors) return errorsHelper.badRequestError(response,errors);
-        if(await authLogic.isUsernameTaken(user.username)) return response.status(400).send(`Username "${user.username}" already taken.`);
-        
+        if (errors) return errorsHelper.badRequestError(response, errors);
+        if (await authLogic.isUsernameTaken(user.username)) return response.status(400).send(`Username "${user.username}" already taken.`);
+
         const addedUser = await authLogic.registerAsync(user);
-        // console.log( addedUser = await authLogic.registerAsync(user));
-        
+
         response.status(201).json(addedUser);
     }
     catch (err) {
@@ -29,16 +28,15 @@ router.post("/login", async (request, response) => {
         const credentials = new CredentialsModel(request.body);
 
         const errors = credentials.validate();
-        if (errors) return errorsHelper.badRequestError(response,err);
-        
+        if (errors) return errorsHelper.badRequestError(response, err);
+
         const loggedInUser = await authLogic.loginAsync(credentials);
         if (!loggedInUser) return response.status(401).send("Incorrect username or password.");
-        console.log(request.body);
 
         response.json(loggedInUser);
     }
     catch (err) {
-        errorsHelper.internalServerError(response,err);
+        errorsHelper.internalServerError(response, err);
     }
 });
 

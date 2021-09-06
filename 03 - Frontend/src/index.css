@@ -12,9 +12,7 @@ body,
   flex-direction: column;
   background-image: linear-gradient(white, darkgray, darkgray, darkgray, white);
 }
-a {
-  color: blue;
-}
+
 img{
     border-radius: 25px;
 }
@@ -43,3 +41,7 @@ img{
   top: 3px;
   right: 30px;
 }
+a {
+    text-decoration: none !important ;
+    color: blue;
+  }

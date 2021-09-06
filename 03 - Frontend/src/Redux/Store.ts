@@ -1,4 +1,4 @@
-import { FollowedVacationReducer, FollowedVacationState } from './FollowedVacationState';
+import { FollowedVacationReducer,  } from './FollowedVacationState';
 import { combineReducers, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import config from "../Services/Config";

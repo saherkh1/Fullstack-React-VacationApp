@@ -1,5 +1,5 @@
-const Joi = require("joi");
 const BaseModel = require("./base-model");
+const Joi = require("joi");
 
 class Credentials {
 

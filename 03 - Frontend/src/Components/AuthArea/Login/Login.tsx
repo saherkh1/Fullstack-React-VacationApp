@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink, useHistory } from "react-router-dom";
 import CredentialsModel from "../../../Models/CredentialsModel";
@@ -8,7 +7,6 @@ import { AuthActionType } from "../../../Redux/AuthState";
 import store from "../../../Redux/Store";
 import config from "../../../Services/Config";
 import notify from "../../../Services/Notify";
-import socketService from "../../../Services/SocketService";
 import "./Login.css";
 
 function Login(): JSX.Element {
