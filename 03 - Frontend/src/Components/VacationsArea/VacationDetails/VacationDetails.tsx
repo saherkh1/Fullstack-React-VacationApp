@@ -1,23 +1,17 @@
-import {
-    VacationsAction,
-    VacationsActionType,
-} from "../../../Redux/VacationsState";
+
 import { getISOUserFriendlyString } from "../../../Services/DateService";
 import { NavLink, useHistory, useParams } from "react-router-dom";
 import socketService from "../../../Services/SocketService";
 import VacationModel from "../../../Models/VacationModel";
-import jwtAxios from "../../../Services/jwtAxios";
 import config from "../../../Services/Config";
 import notify from "../../../Services/Notify";
-import store from "../../../Redux/Store";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "react-bootstrap";
 import "./VacationDetails.css";
 import {
-    getVacationAsync,
-    isVacationsInStore,
-    updateVacationWithFormData,
+    getVacation,
+    updateVacationWithFormDataAsync,
 } from "../../../Services/vacationService";
 import {
     isItTheAdminUser,
@@ -38,18 +32,18 @@ function VacationDetails(): JSX.Element {
     let isMounted: boolean;
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         isMounted = true;
         activate();
-        console.log("fire!");
         return () => { isMounted = false };
     });
 
     async function activate() {
         try {
-            if (!isUserLoggedIn()) history.push("/login");
-            else if (isItTheAdminUser) { isMounted && isAdmin(true) }
+            if (!(isUserLoggedIn())) history.push("/login");
+            else if (isItTheAdminUser) { isAdmin(true) }
             if (vacation?.vacationId === undefined) {
-                isMounted && setVacation(getVacationAsync(+routeProps.id));
+                isMounted && setVacation(getVacation(+routeProps.id));
             }
         } catch (err) {
             notify.error(err);
@@ -65,23 +59,7 @@ function VacationDetails(): JSX.Element {
             myFormData.append("endTime", Vacation.endTime.toString());
             myFormData.append("image", Vacation.image.item(0));
 
-            // const response = await jwtAxios.patch<VacationModel>(
-            //     config.vacationsUrl + routeProps.id,
-            //     myFormData
-            // );
-            // const vacationsAction: VacationsAction = {
-            //     type: VacationsActionType.VacationUpdated,
-            //     payload: response.data,
-            // };
-            // store.dispatch(vacationsAction);
-            // setVacation({
-            //     ...store
-            //         .getState()
-            //         .VacationsState.Vacations.find(
-            //             (oneVacation) => oneVacation.vacationId === +routeProps.id
-            //         ),
-            // });
-            const vacationsAction = await updateVacationWithFormData(myFormData, vacation.vacationId);
+            const vacationsAction = await updateVacationWithFormDataAsync(myFormData, vacation.vacationId);
             setVacation(vacationsAction.payload)
             admin && socketService.send(vacationsAction);
             notify.success("Vacation has been Updated.");

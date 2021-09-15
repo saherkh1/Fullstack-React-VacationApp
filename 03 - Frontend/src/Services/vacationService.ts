@@ -9,13 +9,13 @@ export async function downloadVacationsToStore() {
     const response = await jwtAxios.get<VacationModel[]>(config.vacationsUrl);
     store.dispatch({ type: VacationsActionType.VacationsDownloaded, payload: response.data });
 }
-export function getVacationAsync(vacationId: number)  {
+export function getVacation(vacationId: number)  {
     (!isVacationsInStore) && downloadVacationsToStore();
     return ({ ...store.getState().VacationsState.Vacations
         .find(oneVacation => oneVacation.vacationId === vacationId) })
 }
 
-export async function updateVacationWithFormData(myFormData: FormData, vacationId: number) {
+export async function updateVacationWithFormDataAsync(myFormData: FormData, vacationId: number) {
     const response = await jwtAxios.patch<VacationModel>(
         config.vacationsUrl + vacationId,
         myFormData
